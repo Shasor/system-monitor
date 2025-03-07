@@ -49,3 +49,61 @@ const char *getOsName()
     return "Other";
 #endif
 }
+
+char *getHostname()
+{
+    static char hostname[1024]; // Static = mémoire persiste après la fin de la fonction
+    gethostname(hostname, 1024);
+    return hostname;
+}
+
+char *getTotalProcesses()
+{
+    static char result[32]; // Buffer statique pour stocker le nombre de processus
+    std::ifstream file("/proc/stat");
+    std::string line;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, line))
+        {
+            if (line.rfind("processes", 0) == 0) // Vérifie si la ligne commence par "processes"
+            {
+                std::sscanf(line.c_str(), "processes %s", result);
+                return result;
+            }
+        }
+        file.close();
+    }
+    // Si échec, retourne une valeur par défaut
+    std::snprintf(result, sizeof(result), "N/A");
+    return result;
+}
+
+char *getCPUName()
+{
+    static char result[512]; // Buffer statique pour stocker le nom du CPU
+    std::ifstream file("/proc/cpuinfo");
+    std::string line;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, line))
+        {
+            if (line.rfind("model name", 0) == 0) // Vérifie si la ligne commence par "model name"
+            {
+                std::size_t pos = line.find(": "); // Trouve ": " pour extraire le nom
+                if (pos != std::string::npos)
+                {
+                    const char *name = line.c_str() + pos + 2; // Pointeur vers le début du nom du CPU
+                    std::snprintf(result, sizeof(result), "%s", name);
+                    return result;
+                }
+            }
+        }
+        file.close();
+    }
+    // Si échec, retourne une valeur par défaut
+    std::snprintf(result, sizeof(result), "Unknown CPU");
+    return result;
+}
