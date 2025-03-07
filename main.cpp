@@ -1,5 +1,5 @@
 #include "header.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 /*
 NOTE : You are free to change the code as you wish, the main objective is to make the
