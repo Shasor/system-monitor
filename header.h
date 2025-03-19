@@ -32,6 +32,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <map>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -96,12 +98,11 @@ struct RX
     int compressed;
 };
 
+extern std::chrono::high_resolution_clock::time_point lastTime;
+
 // student TODO : system stats
-string CPUinfo();
-const char *getOsName();
-char *getHostname();
-char *getTotalProcesses();
-char *getCPUName();
+CPUStats getCPUStats();
+void renderSystem(std::chrono::duration<float> deltaTime);
 
 // student TODO : memory and processes
 

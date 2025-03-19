@@ -42,19 +42,16 @@ using namespace gl;
 #endif
 
 // systemWindow, display information for the system monitorization
-void systemWindow(const char *id, ImVec2 size, ImVec2 position)
+void systemWindow(const char *id, ImVec2 size, ImVec2 position, std::chrono::duration<float> deltaTime)
 {
-    ImGui::Begin(id);
-    ImGui::SetWindowSize(id, size);
-    ImGui::SetWindowPos(id, position);
+    ImGui::Begin(id, nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    {
+        ImGui::SetWindowSize(id, size);
+        ImGui::SetWindowPos(id, position);
 
-    // student TODO : add code here for the system window
-    ImGui::Text("Operating System Used: %s", getOsName());
-    ImGui::Text("Computer Name: %s", getHostname());
-    ImGui::Text("User logged: %s", getenv("USER"));
-    ImGui::Text("Number of working processes: %s", getTotalProcesses());
-    ImGui::Text("CPU: %s", getCPUName());
-
+        // student TODO : add code here for the system window
+        renderSystem(deltaTime);
+    }
     ImGui::End();
 }
 
@@ -172,6 +169,9 @@ int main(int, char **)
                 done = true;
         }
 
+        auto now = std::chrono::high_resolution_clock::now();
+        auto deltaTime = std::chrono::duration<float>(now - lastTime);
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(window);
@@ -185,7 +185,7 @@ int main(int, char **)
             // --------------------------------------
             systemWindow("== System ==",
                          ImVec2((mainDisplay.x / 2) - 10, (mainDisplay.y / 2) + 30),
-                         ImVec2(10, 10));
+                         ImVec2(10, 10), deltaTime);
             // --------------------------------------
             networkWindow("== Network ==",
                           ImVec2(mainDisplay.x - 20, (mainDisplay.y / 2) - 60),
